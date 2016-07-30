@@ -14,11 +14,12 @@ var app_socketHandler_1 = require('./app.socketHandler');
 var AppComponent = (function () {
     function AppComponent(_appSocketHandler) {
         this._appSocketHandler = _appSocketHandler;
+        // items: <Array<string>>;
         this.firstName = '';
         this.clickMessage = '';
         this.msg = '';
         this.test = 'test';
-        this._appSocketHandler.setList(this.items);
+        // this._appSocketHandler.setList(this.items);
     }
     AppComponent.prototype.onClickMe = function (firstName) {
         this.firstName = firstName;
@@ -28,7 +29,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "\n  First Name: <input [(ngModel)]=\"firstName\">\n  {{firstName}}\n    <button (click)=\"onClickMe(firstName)\">Click me!</button>\n    {{clickMessage}}\n    {{msg}}\n    {{_appSocketHandler.msgs}}\n    {{items}}\n    ",
+            template: "\n  {{_appSocketHandler.msgs}} <br>\n  First Name: <input [(ngModel)]=\"firstName\">\n\n  {{firstName}}\n    <button (click)=\"onClickMe(firstName)\">Click me!</button>\n    {{clickMessage}}\n    {{msg}}\n\n    \n    ",
             providers: [app_socketHandler_1.AppSocketHandler]
         }),
         core_2.Injectable(), 

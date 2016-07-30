@@ -1,13 +1,13 @@
 "use strict";
 var AppSocketHandler = (function () {
     function AppSocketHandler() {
-        this.msgs = ["aaa"];
+        this.msgs = [];
         this.ws = new WebSocket("ws://localhost:5000/echo");
         this.ws.onmessage = function (evt) {
             var received_msg = evt.data;
             alert("test " + received_msg);
-            // this.msgs.push = ["sss"];
-        };
+            this.msgs.push(received_msg);
+        }.bind(this);
     }
     AppSocketHandler.prototype.addToList = function (msg) {
         alert(msg);
@@ -24,9 +24,11 @@ var AppSocketHandler = (function () {
         return "it works";
     };
     AppSocketHandler.prototype.sendMsg = function (str) {
+        alert('before ' + this.ws.readyState);
         alert(str);
         this.ws.send(str);
-        this.msgs.push("bb");
+        alert(this.ws.readyState);
+        //this.msgs.push("bb");
     };
     return AppSocketHandler;
 }());
