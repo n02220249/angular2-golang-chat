@@ -1,15 +1,30 @@
 import { Component } from '@angular/core';
-import { Injectable } from '@angular/core';
+//import { Injectable } from '@angular/core';
 import { AppSocketHandler } from './app.socketHandler';
 
 @Component({
   selector: 'my-app',
   template: `
-  {{_appSocketHandler.msgs}} <br>
+
+
+<ul>
+    <li *ngFor="let msg of _appSocketHandler.msgs">
+      {{ msg }}
+      </li>
+  </ul>
+
+
+  <br>
   First Name: <input [(ngModel)]="firstName">
 
   {{firstName}}
     <button (click)="onClickMe(firstName)">Click me!</button>
+    <input #newMsg
+      (keyup.enter)="onClickMe(newHMsg.value)"
+      (blur)="onClickMe(newMsg.value); newMsg.value='' ">
+
+    <button (click)=onClickMe(newMsg.value)>Add</button>
+
     {{clickMessage}}
     {{msg}}
 
@@ -17,7 +32,7 @@ import { AppSocketHandler } from './app.socketHandler';
     `,
   providers:[AppSocketHandler]
 })
-@Injectable()
+//@Injectable()
 export class AppComponent { 
  // items: <Array<string>>;
   firstName = '';
@@ -31,7 +46,8 @@ export class AppComponent {
 
   onClickMe(firstName: string) {
     this.firstName = firstName;
-    this.clickMessage = 'You are my hero!';
+    this.firstName = "";
+    //this.clickMessage = 'You are my hero!';
 
 
     this._appSocketHandler.sendMsg(firstName);

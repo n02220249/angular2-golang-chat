@@ -9,8 +9,11 @@ import (
 	"golang.org/x/net/websocket"
     "math/rand"
     "strconv"
+    "strings"
+ 
 )
  //   var users map[*websocket.Conn]int
+    var msgs []string
     var users map[int]*websocket.Conn
 // Echo the data received on the WebSocket.
 func EchoServer(ws *websocket.Conn) {
@@ -22,6 +25,7 @@ func EchoServer(ws *websocket.Conn) {
      fmt.Println("id : "+ string(id))
      users[id] = ws
      fmt.Println(len(users))
+     ws.Write([]byte(strings.Join(msgs, ",")))
   for {
     receivedtext := make([]byte, 100)
     
@@ -35,7 +39,14 @@ func EchoServer(ws *websocket.Conn) {
     } else {
         str := string(receivedtext)
         str = strconv.Itoa(id) + ": " + str
-ws.Write([]byte(str))
+
+        msgs = append(msgs, str)
+
+        fmt.Printf("%v", msgs)
+//ws.Write([]byte(strings.Join(msgs, ",")))
+      for k := range users {
+        users[k].Write([]byte(strings.Join(msgs, ",")))
+       }
 
     }
  
@@ -76,7 +87,9 @@ ws.Write([]byte(str))
 }
 // This example demonstrates a trivial echo server.
 func main() {
+
     users = map[int]*websocket.Conn{}
+    msgs = make([]string, 0, 10)
 	http.Handle("/echo", websocket.Handler(EchoServer))
 
 	err := http.ListenAndServe(":5000", nil)

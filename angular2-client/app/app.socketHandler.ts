@@ -7,9 +7,9 @@ export class AppSocketHandler {
   this.ws.onmessage = function (evt) 
                { 
                   var received_msg = evt.data;
-                  alert("test "+received_msg);
-                  this.msgs.push(received_msg);
-
+                 // alert("test "+received_msg);
+                 // this.msgs.push(received_msg);
+                 this.msgs = String(received_msg).split(',');
 
                }.bind(this);
 
@@ -36,10 +36,10 @@ alert("works");
 	}
 
     sendMsg(str){
-    alert('before '+this.ws.readyState);
-alert(str);
+   // alert('before '+this.ws.readyState);
+//alert(str);
 this.ws.send(str);
-alert(this.ws.readyState);
+//alert(this.ws.readyState);
 //this.msgs.push("bb");
 
     }
