@@ -10,6 +10,7 @@ import (
     "math/rand"
     "strconv"
     "strings"
+ //   "html/template"
  
 )
  //   var users map[*websocket.Conn]int
@@ -33,7 +34,11 @@ func EchoServer(ws *websocket.Conn) {
  
     if err != nil {
       fmt.Printf("Received: %d bytes\n",n)
-      
+fmt.Printf("closed")  
+       delete(users, id)
+
+       ws.Close()
+       return    
 
 
     } else {
@@ -55,41 +60,28 @@ func EchoServer(ws *websocket.Conn) {
     //io.Copy(ws, ws)
     //fmt.Printf("Sent: %s\n",s)
   }
-  /*
-    
-    if err := websocket.Message.Receive(ws, &in); err != nil {
-        return
-    } else {
-        fmt.Println("test")
-    }
-    if name, ok := users[ws]; ok {
-        fmt.Println(name, ok)
-        fmt.Println("recognized")
-        fmt.Println(users[ws])
-    } else {
-        fmt.Println(name, ok)
-        id := rand.Intn(1000000000)
-        users[ws] = id
-        fmt.Println(id)
-    }
-    fmt.Printf("Received: %s\n", string(in))
-
-    if err := websocket.Message.Send(ws, in); err != nil {
-        return
-    }
-    
-    fmt.Printf("Received: %s\n", "sent")
-
-//	fmt.Println(ws)
-	io.Copy(ws, ws)
-    */
 
 }
 // This example demonstrates a trivial echo server.
+
+
 func main() {
 
     users = map[int]*websocket.Conn{}
     msgs = make([]string, 0, 10)
+
+   // mux := http.NewServeMux()
+    //mux.Handle("/echo", websocket.Handler(EchoServer))
+    //http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
+    http.Handle("/", http.FileServer(http.Dir("./")))
+    http.Handle("/app/", http.StripPrefix("/app/", http.FileServer(http.Dir("app"))))
+    http.Handle("/node_modules/", http.StripPrefix("/node_modules/", http.FileServer(http.Dir("node_modules"))))
+
+//    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+//    http.ServeFile(w, r, "./index.html")
+
+//})
+
 	http.Handle("/echo", websocket.Handler(EchoServer))
 
 	err := http.ListenAndServe(":5000", nil)
