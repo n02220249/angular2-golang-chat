@@ -25,6 +25,8 @@ func EchoServer(ws *websocket.Conn) {
      fmt.Println(id)
      fmt.Println("id : "+ string(id))
      users[id] = ws
+     msgs = append(msgs, strconv.Itoa(id) + " has joined")
+     updateClientMsgs()
      fmt.Println(len(users))
      ws.Write([]byte(strings.Join(msgs, ",")))
   for {
@@ -35,6 +37,8 @@ func EchoServer(ws *websocket.Conn) {
     if err != nil {
       fmt.Printf("Received: %d bytes\n",n)
 fmt.Printf("closed")  
+     msgs = append(msgs, strconv.Itoa(id) + " has left")
+     updateClientMsgs()
        delete(users, id)
 
        ws.Close()
@@ -49,9 +53,7 @@ fmt.Printf("closed")
 
         fmt.Printf("%v", msgs)
 //ws.Write([]byte(strings.Join(msgs, ",")))
-      for k := range users {
-        users[k].Write([]byte(strings.Join(msgs, ",")))
-       }
+      updateClientMsgs()
 
     }
  
@@ -63,6 +65,12 @@ fmt.Printf("closed")
 
 }
 // This example demonstrates a trivial echo server.
+func updateClientMsgs(){
+      for k := range users {
+        users[k].Write([]byte(strings.Join(msgs, ",")))
+       }
+
+}
 
 
 func main() {
