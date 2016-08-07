@@ -13,19 +13,16 @@ var app_socketHandler_1 = require('./app.socketHandler');
 var AppComponent = (function () {
     function AppComponent(_appSocketHandler) {
         this._appSocketHandler = _appSocketHandler;
-        this.firstName = '';
-        this.clickMessage = '';
-        this.msg = '';
-        this.test = 'test';
+        this.message = '';
     }
-    AppComponent.prototype.clicked = function (firstName) {
-        this.firstName = "";
-        this._appSocketHandler.sendMsg(firstName);
+    AppComponent.prototype.clicked = function (message) {
+        this.message = ''; //clear text field after sending message
+        this._appSocketHandler.sendMsg(message); //have Socket Handler send message to server
     };
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "\n\n  <ul>\n    <li *ngFor=\"let msg of _appSocketHandler.msgs\">\n      {{ msg }}\n      </li>\n  </ul>\n\n  <br>\n  <input [(ngModel)]=\"firstName\">\n  <button (click)=\"clicked(firstName)\">Send</button>\n  ",
+            template: "\n\n  <ul>\n    <li *ngFor=\"let msg of _appSocketHandler.msgs\">\n      {{ msg }}\n    </li>\n  </ul>\n\n  <br>\n  <input [(ngModel)]=\"message\">\n  <button (click)=\"clicked(message)\">Send</button>\n  ",
             providers: [app_socketHandler_1.AppSocketHandler]
         }), 
         __metadata('design:paramtypes', [app_socketHandler_1.AppSocketHandler])

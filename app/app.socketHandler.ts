@@ -1,21 +1,18 @@
 export class AppSocketHandler {
-	msgs;
-	ws;
+	msgs: string[];
+	ws: WebSocket;
+
   constructor(){
-  this.msgs = [];
-  this.ws = new WebSocket("ws://localhost:5000/echo");
-  this.ws.onmessage = function (evt) 
-               { 
-                  var received_msg = evt.data;
-                 this.msgs = String(received_msg).split(',');
+    this.msgs = [];
+    this.ws = new WebSocket("ws://localhost:5000/echo");
+    this.ws.onmessage = function (evt)                  //create listener for incoming messages
+      { 
+        var received_msg = evt.data;
+        this.msgs = String(received_msg).split(',');    //convert message into array and set as this.msgs
+      }.bind(this);                                     // bind this context to have scope of this.msgs
+    }
 
-               }.bind(this);
-
+  sendMsg(str: string){
+    this.ws.send(str);
   }
-
-  sendMsg(str){
-     this.ws.send(str);
-
-  }
-
 }

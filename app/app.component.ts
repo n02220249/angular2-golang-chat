@@ -8,31 +8,29 @@ import { AppSocketHandler } from './app.socketHandler';
   <ul>
     <li *ngFor="let msg of _appSocketHandler.msgs">
       {{ msg }}
-      </li>
+    </li>
   </ul>
 
   <br>
-  <input [(ngModel)]="firstName">
-  <button (click)="clicked(firstName)">Send</button>
+  <input [(ngModel)]="message">
+  <button (click)="clicked(message)">Send</button>
   `,
   providers:[AppSocketHandler]
 })
 
 export class AppComponent { 
 
-  firstName = '';
-  clickMessage = '';
-  msg = '';
-  test = 'test';
+  message = '';
 
   constructor(public _appSocketHandler: AppSocketHandler) {
 
   }
 
-  clicked(firstName: string) {
-    this.firstName = "";
+  clicked(message: string) {
 
-    this._appSocketHandler.sendMsg(firstName);
+    this.message = '';                          //clear text field after sending message
+
+    this._appSocketHandler.sendMsg(message);    //have Socket Handler send message to server
 
   }
 }
