@@ -4,69 +4,66 @@
 package main
 import (
     "fmt"
-//	"io"
-	"net/http"
-	"golang.org/x/net/websocket"
+	  "net/http"
+	  "golang.org/x/net/websocket"
     "math/rand"
     "strconv"
     "strings"
- //   "html/template"
  
 )
- //   var users map[*websocket.Conn]int
+
     var msgs []string
     var users map[int]*websocket.Conn
-// Echo the data received on the WebSocket.
+
 func EchoServer(ws *websocket.Conn) {
-   //var in []byte
-	//var in string
-//    var users map[*websocket.Conn]int
-     id := rand.Intn(1000000000)
-     fmt.Println(id)
-     fmt.Println("id : "+ string(id))
-     users[id] = ws
-     msgs = append(msgs, strconv.Itoa(id) + " has joined")
-     updateClientMsgs()
-     fmt.Println(len(users))
-     ws.Write([]byte(strings.Join(msgs, ",")))
-  for {
+
+     id := rand.Intn(1000000000)           // create new client's id
+     fmt.Println("id : "+ strconv.Itoa(id))
+
+     users[id] = ws            //add new user's ws connection to users
+     msgs = append(msgs, strconv.Itoa(id) + " has joined")  //add new user message to msgs
+
+     updateClientMsgs()    //update all clients' msgs
+     fmt.Println("number of users in room: " + strconv.Itoa(len(users)))
+
+  for {                //enter infinite loop listening to receive incoming ws data
     receivedtext := make([]byte, 100)
     
     n,err := ws.Read(receivedtext)
  
-    if err != nil {
-      fmt.Printf("Received: %d bytes\n",n)
-fmt.Printf("closed")  
-     msgs = append(msgs, strconv.Itoa(id) + " has left")
-     updateClientMsgs()
-       delete(users, id)
+    if err != nil {           // if err is not nil ws is closed
+
+     fmt.Println("closed")  
+     msgs = append(msgs, strconv.Itoa(id) + " has left")  //add user has left message to msgs 
+
+     updateClientMsgs()   //update users' msgs 
+
+     delete(users, id)    //remove user from users 
+     fmt.Println("number of users in room: " + strconv.Itoa(len(users)))
 
        ws.Close()
-       return    
+       return       //exit infinite loop
 
 
-    } else {
+    } else {       //ws received new message from client
         str := string(receivedtext)
         str = strconv.Itoa(id) + ": " + str
 
-        msgs = append(msgs, str)
+        msgs = append(msgs, str)    //add message to msgs    
 
-        fmt.Printf("%v", msgs)
-//ws.Write([]byte(strings.Join(msgs, ",")))
-      updateClientMsgs()
+      updateClientMsgs()    //update users' msgs 
 
     }
  
     s := string(receivedtext[:n])
     fmt.Printf("Received: %d bytes: %s\n",n,s)
-    //io.Copy(ws, ws)
-    //fmt.Printf("Sent: %s\n",s)
+
   }
 
 }
-// This example demonstrates a trivial echo server.
+
 func updateClientMsgs(){
-      for k := range users {
+      for k := range users {              // send updated state of msgs to all clients
         users[k].Write([]byte(strings.Join(msgs, ",")))
        }
 
@@ -75,22 +72,16 @@ func updateClientMsgs(){
 
 func main() {
 
-    users = map[int]*websocket.Conn{}
-    msgs = make([]string, 0, 10)
-
-   // mux := http.NewServeMux()
-    //mux.Handle("/echo", websocket.Handler(EchoServer))
-    //http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
+    users = map[int]*websocket.Conn{}        //list of users websocket connections
+    msgs = make([]string, 0, 10)             //list of this chat room's messages
+                                             //server static angular2 files
     http.Handle("/", http.FileServer(http.Dir("./")))
     http.Handle("/app/", http.StripPrefix("/app/", http.FileServer(http.Dir("app"))))
     http.Handle("/node_modules/", http.StripPrefix("/node_modules/", http.FileServer(http.Dir("node_modules"))))
 
-//    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-//    http.ServeFile(w, r, "./index.html")
+  	http.Handle("/echo", websocket.Handler(EchoServer))      //listen for websocket endpoint
 
-//})
-
-	http.Handle("/echo", websocket.Handler(EchoServer))
+    fmt.Println("server started, go to http://localhost:5000")
 
 	err := http.ListenAndServe(":5000", nil)
 	if err != nil {
